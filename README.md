@@ -36,7 +36,7 @@ Este projeto é um agregador de notícias focado em **games**, desenvolvido com 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/IgorConstant/NewsAngular.git
+git clone https://github.com/IgorConstant/AngularNews.git
 ```
 
 ### 2. Instale as dependências do back-end

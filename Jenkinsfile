@@ -1,60 +1,71 @@
 pipeline {
   agent any
 
-  tools {
-    nodejs "node-18" // O mesmo nome configurado em Global Tools
+  environment {
+    BACKEND_DIR = 'backend'
+    FRONTEND_DIR = 'frontend'
+    NODE_ENV = 'production'
   }
 
-  environment {
-    CI = 'true'
+  tools {
+    nodejs 'NodeJS_20' // ou o nome que deu ao configurar
   }
 
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/IgorConstant/AngularNew.git'
+        git 'https://github.com/IgorConstant/AngularNews.git'
       }
     }
 
-    stage('Install Dependencies') {
+    stage('Install Backend') {
       steps {
-        sh 'npm install'
-        dir('frontend') { // se você separa frontend/backend
+        dir("${env.BACKEND_DIR}") {
           sh 'npm install'
         }
       }
     }
 
-    stage('Build Angular') {
+    stage('Install Frontend') {
       steps {
-        dir('frontend') {
-          sh 'npm run build' // ou ng build se usar o Angular CLI
+        dir("${env.FRONTEND_DIR}") {
+          sh 'npm install'
         }
       }
     }
 
-    stage('Run Tests') {
+    stage('Lint & Test Frontend') {
       steps {
-        dir('frontend') {
-          sh 'npm test -- --watch=false --browsers=ChromeHeadless'
+        dir("${env.FRONTEND_DIR}") {
+          sh 'npm run lint || true' // opcional
+          sh 'npm run test -- --watch=false --browsers=ChromeHeadless'
         }
       }
     }
 
-    // Opcional
-    stage('Deploy') {
-      when {
-        branch 'main'
-      }
+    stage('Test Backend') {
       steps {
-        echo 'Fazer deploy aqui via SSH, Docker, Firebase, etc.'
+        dir("${env.BACKEND_DIR}") {
+          sh 'npm test || true' // se tiver testes
+        }
+      }
+    }
+
+    stage('Build Frontend') {
+      steps {
+        dir("${env.FRONTEND_DIR}") {
+          sh 'npm run build'
+        }
       }
     }
   }
 
   post {
-    always {
-      junit '**/coverage/**/TESTS-*.xml'
+    failure {
+      echo 'Pipeline falhou!'
+    }
+    success {
+      echo 'Pipeline concluída com sucesso!'
     }
   }
 }

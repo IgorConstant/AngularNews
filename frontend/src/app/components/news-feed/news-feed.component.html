@@ -1,0 +1,32 @@
+<section id="CardsList">
+    <div class="container">
+        <div class="content__news">
+            @if(loading) {
+                <div class="loading">
+                    <p>Carregando...</p>
+                </div>
+            } @else if (error) {
+                <div class="error">
+                    <p>{{ error }}</p>
+                </div>
+            } @else {
+                <div class="row">
+                    @for (item of news; track item.title) {
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card mb-3">
+                                <h5 class="card-header p-0">
+                                    <img [src]="item.thumbnail" alt="Thumbnail" class="img-fluid">
+                                </h5>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ limitText(item.title, 18) }}</h5>
+                                    <p class="card-text">{{ limitText(item.description, 30) }}</p>
+                                    <a [href]="item.link" class="btn btn-primary">Ver mais</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
